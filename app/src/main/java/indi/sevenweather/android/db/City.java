@@ -23,6 +23,7 @@ public class City extends LitePalSupport {
     public void setCityName(String cityName){
         this.cityName = cityName;
     }
+
     public int getCityCode(){
         return cityCode;
     }

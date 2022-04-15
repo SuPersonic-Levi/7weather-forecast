@@ -10,20 +10,29 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import org.litepal.LitePal;
 import org.litepal.crud.LitePalSupport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import indi.sevenweather.android.db.City;
 import indi.sevenweather.android.db.County;
 import indi.sevenweather.android.db.Province;
+import indi.sevenweather.android.util.HttpUtil;
+import indi.sevenweather.android.util.Utility;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class ChooseAreaFragment extends Fragment {
     public static final int LEVEL_PROVINCE = 0;
@@ -57,7 +66,7 @@ public class ChooseAreaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
         View view = inflater.inflate(R.layout.choose_area, container, false);//初始化layout下的xml
-        titleText = (TextView) view.findViewById(R.id.title_text);
+        titleText = (TextView) view.findViewById(R.id.title_text); //获取这些控件的实例，绑定
         backButton = (Button) view.findViewById(R.id.back_button);
         listView = (ListView) view.findViewById(R.id.list_view);
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList); //初始化arrayadapter，设置为Listview的适配器
@@ -71,9 +80,10 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
-
+//给listview设置点击事件
             public void onItemClick(AdapterView<?>parent, View view, int position, long id){
                 if(currentLevel == LEVEL_PROVINCE){
                     selectedProvince = provinceList.get(position);
@@ -85,6 +95,7 @@ public class ChooseAreaFragment extends Fragment {
             }
         });
 
+//给button设置点击事件
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,12 +127,12 @@ public class ChooseAreaFragment extends Fragment {
 
             adapter.notifyDataSetChanged();//数据无法直接传递给控件，需要一个适配器通知数据刷新了
             listView.setSelection(0);// public static final int LEVEL_PROVINCE = 0;
-            currentLevel = LEVEL_PROVINCE;
+            currentLevel = LEVEL_PROVINCE; /** 有点不明白这里为什么要重新把这个level再设置一次*/
 
 
 
         }else{
-            String address = "https://guolin.tech/api/china"; //从提供的服务器中获取数据
+            String address = "http://guolin.tech/api/china"; //从提供的服务器中获取数据
             queryFromServer(address,"province");
         }
     }
@@ -156,7 +167,7 @@ DataSupport.where("name = ? or pric = ?", "张三", "5000").find( User.class);**
 
         }else{
             int provinceCode = selectedProvince.getProvinceCode();
-            String address = "https://guolin.tech/api/china/"+provinceCode;
+            String address = "http://guolin.tech/api/china/"+provinceCode;
             queryFromServer(address,"city");
         }
     }
@@ -179,15 +190,80 @@ DataSupport.where("name = ? or pric = ?", "张三", "5000").find( User.class);**
         }else{
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "https://guolin.tech/api/china" + provinceCode + "/" + cityCode;
-            queryFromSever(address,"county");
+            String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
+            queryFromServer(address,"county");
         }
     }
+
 
     /**
      * 根据传入的address喝类型从服务器查询具体数据*/
     private void queryFromServer(String address, final String type){
-        
+        showProgressDialog();
+        HttpUtil.sendOkHttpRequest(address, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                //通过runonUithread方法回到主线程处理逻辑
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        closeProgressDialog();
+                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+
+            @Override//响应的数据会回调到这里
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseText = response.body().string();
+                boolean result = false;
+                if("province".equals(type)){
+                    result = Utility.handleProvinceResponse(responseText); //解析传回来的省json数据并存储到数据库中
+                }else if("city".equals(type)){
+                    result = Utility.handleCityResponse(responseText, selectedProvince.getId());
+                }else if("county".equals(type)){
+                    result = Utility.handleCountyResponse(responseText, selectedCity.getId());
+                }
+
+                if(result){
+                    getActivity().runOnUiThread(new Runnable() {//使用runonuithread从子线程切换到主线程
+                        @Override
+                        public void run() {
+                            closeProgressDialog();
+                            if("province".equals(type)){
+                                queryProvinces();//由于queryprovinces牵扯到了ui操作，所以必须在主线程中调用；由于数据库中已经有了数据，直接调用query就会出现在界面上了
+                            }else if("city".equals(type)){
+                                queryCities();
+                            }else if("county".equals(type)){
+                                queryCounties();
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    /**
+     * 显示进度对话框*/
+    private void showProgressDialog(){
+        if(progressDialog == null){ //如果没有这个对话框就新建一个
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("加载中");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+    }
+
+
+    /**
+     * 关闭进度对话框*/
+    private void closeProgressDialog(){
+        if(progressDialog != null){ //如果对话框存在才能close
+            progressDialog.dismiss();
+        }
     }
 
 }
