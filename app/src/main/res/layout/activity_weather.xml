@@ -14,6 +14,10 @@
         android:scaleType="centerCrop"/>
 
 <!--scrollview只允许存在一个直接子布局，所以嵌套一个linearlayout把定义的剩下的布局逐个引入-->
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/swipe_refresh">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,5 +46,5 @@
 
 
     </ScrollView>
-
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>
