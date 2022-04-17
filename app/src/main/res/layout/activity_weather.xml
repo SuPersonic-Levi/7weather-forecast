@@ -4,8 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity_weather"
-    android:background=" @color/colorPrimary">
+    tools:context=".WeatherActivity"
+    android:background="#F87D7D">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/bing_pic_img"
+        android:scaleType="centerCrop"/>
+
 <!--scrollview只允许存在一个直接子布局，所以嵌套一个linearlayout把定义的剩下的布局逐个引入-->
     <ScrollView
         android:layout_width="match_parent"
@@ -18,8 +25,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:fitsSystemWindows="true">
+<!--fitsSystemWindows可以为系统状态栏留出空间来fit-->
             <include layout="@layout/title"/>
             <include layout="@layout/now"/>
             <include layout="@layout/forecast"/>

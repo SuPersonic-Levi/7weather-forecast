@@ -13,17 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.7weather">
         <activity
-            android:name=".activity_weather"
-            android:exported="false" />
+            android:name=".WeatherActivity"
+            android:exported="false"
+            />
+
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

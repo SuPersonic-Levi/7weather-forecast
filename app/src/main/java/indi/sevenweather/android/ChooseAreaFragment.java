@@ -1,6 +1,7 @@
 package indi.sevenweather.android;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -91,11 +92,18 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if(currentLevel == LEVEL_COUNTY){//跳转到天气显示页面，有点不懂
+                    String weatherId = countyList.get(position).getWeatherId(); //获取到天气id再传给intent里
+                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);//启动天气显示页面
+                    getActivity().finish();
+
                 }
             }
         });
 
-//给button设置点击事件
+//给back的button设置点击事件
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
