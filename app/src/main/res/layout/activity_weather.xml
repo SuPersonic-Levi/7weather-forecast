@@ -14,37 +14,57 @@
         android:scaleType="centerCrop"/>
 
 <!--scrollview只允许存在一个直接子布局，所以嵌套一个linearlayout把定义的剩下的布局逐个引入-->
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/swipe_refresh">
-    <ScrollView
+
+    <androidx.drawerlayout.widget.DrawerLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/weather_layout"
-        android:scrollbars="none"
-        android:overScrollMode="never"
+        android:id="@+id/drawer_layout"
         >
 
-        <LinearLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:fitsSystemWindows="true">
-<!--fitsSystemWindows可以为系统状态栏留出空间来fit-->
-            <include layout="@layout/title"/>
-            <include layout="@layout/now"/>
-            <include layout="@layout/forecast"/>
-            <include layout="@layout/aqi"/>
-            <include layout="@layout/suggestion"/>
+            android:layout_height="match_parent"
+            android:id="@+id/swipe_refresh">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/weather_layout"
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:fitsSystemWindows="true"><!--fitsSystemWindows可以为系统状态栏留出空间来fit-->
+                    <include layout="@layout/title"/>
+                    <include layout="@layout/now"/>
+                    <include layout="@layout/forecast"/>
+                    <include layout="@layout/aqi"/>
+                    <include layout="@layout/suggestion"/>
+
+                </LinearLayout>
+
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!--第二个子控件作为滑动菜单展示的内容-->
+        <androidx.fragment.app.FragmentContainerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:id="@+id/choose_area_fragment"
+            android:name="indi.sevenweather.android.ChooseAreaFragment"
+            />
 
 
 
 
-        </LinearLayout>
 
 
+    </androidx.drawerlayout.widget.DrawerLayout>
 
-    </ScrollView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </FrameLayout>

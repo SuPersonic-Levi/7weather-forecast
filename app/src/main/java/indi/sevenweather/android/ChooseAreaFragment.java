@@ -29,6 +29,7 @@ import java.util.List;
 import indi.sevenweather.android.db.City;
 import indi.sevenweather.android.db.County;
 import indi.sevenweather.android.db.Province;
+import indi.sevenweather.android.gson.Weather;
 import indi.sevenweather.android.util.HttpUtil;
 import indi.sevenweather.android.util.Utility;
 import okhttp3.Call;
@@ -73,15 +74,12 @@ public class ChooseAreaFragment extends Fragment {
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList); //初始化arrayadapter，设置为Listview的适配器
         listView.setAdapter(adapter);
         return view;
-
-
     }
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
 //给listview设置点击事件
@@ -94,10 +92,19 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 }else if(currentLevel == LEVEL_COUNTY){//跳转到天气显示页面，有点不懂
                     String weatherId = countyList.get(position).getWeatherId(); //获取到天气id再传给intent里
-                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);//启动天气显示页面
-                    getActivity().finish();
+
+                    /** 用instanceof来判断这个activity是哪一个类的实例里的然后来选择不同的逻辑*/
+                    if(getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);//启动天气显示页面
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
 
                 }
             }
@@ -135,7 +142,7 @@ public class ChooseAreaFragment extends Fragment {
 
             adapter.notifyDataSetChanged();//数据无法直接传递给控件，需要一个适配器通知数据刷新了
             listView.setSelection(0);// public static final int LEVEL_PROVINCE = 0;
-            currentLevel = LEVEL_PROVINCE; /** 有点不明白这里为什么要重新把这个level再设置一次*/
+            currentLevel = LEVEL_PROVINCE; /** 有点不懂这里为什么要重新把这个level再设置一次*/
 
 
 
