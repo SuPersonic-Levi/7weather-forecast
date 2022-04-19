@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -31,6 +32,7 @@ import java.io.IOException;
 
 import indi.sevenweather.android.gson.Forecast;
 import indi.sevenweather.android.gson.Weather;
+import indi.sevenweather.android.service.AutoUpdateService;
 import indi.sevenweather.android.util.HttpUtil;
 import indi.sevenweather.android.util.Utility;
 import okhttp3.Call;
@@ -240,6 +242,11 @@ public class WeatherActivity extends AppCompatActivity {
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
 
+        /**
+         * 启动自动更新*/
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
+
     }
 
     /**
@@ -271,20 +278,4 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        Log.d("MainActivity", "77levi2"+"onStop");
-    }
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        Log.d("MainActivity", "77levi2"+"onDestroy");
-    }
-    @Override
-    protected void onPause(){
-        super.onPause();
-        Log.d("MainActivity", "77levi2"+"onPause");
-    }
 }
