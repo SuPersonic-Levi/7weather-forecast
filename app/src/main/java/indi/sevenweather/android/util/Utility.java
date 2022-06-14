@@ -14,7 +14,9 @@ import indi.sevenweather.android.db.Province;
 import indi.sevenweather.android.gson.Weather;
 
 public class Utility {
-   /**  用来解析json格式的数据（服务器返回的省市县数据在里面）*/
+   /**  用来解析json格式的数据（服务器返回的省市县数据在里面） 三个省市县用到了JSONObject，天气用到了GSON*/
+   //用jsonarray和jsonobject将数据解析出来，组装成实体对象再save到数据库里
+
     public static boolean handleProvinceResponse(String response){//注意这里的handle是处理的意思
         if( !TextUtils.isEmpty(response)){
             try{
@@ -98,7 +100,7 @@ return false;
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
             String weatherContent = jsonArray.getJSONObject(0).toString();
-            return new Gson().fromJson(weatherContent,Weather.class);
+            return new Gson().fromJson(weatherContent,Weather.class);//因为已经写了gson实体类，直接用gson的fromjson自动将json解析成一个weather对象
 
 
         }catch (Exception e){

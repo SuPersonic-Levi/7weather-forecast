@@ -5,7 +5,7 @@ import org.litepal.crud.LitePalSupport;
 public class Province extends LitePalSupport {
     private int id;
     private String provinceName;
-    private int provinceCode;
+    private int provinceCode; //记录省的代号
 
     public int getId(){
         return id;

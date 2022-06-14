@@ -115,7 +115,7 @@ public class WeatherActivity extends AppCompatActivity {
             Glide.with(this).load(bingPic).into(bingPicImg);
         }else{
             loadBingPic();
-        }
+        } //加载必应背景图片
 
         String weatherString = prefs.getString("weather",null);//读取这里面的数据
 
@@ -126,7 +126,7 @@ public class WeatherActivity extends AppCompatActivity {
             showWeatherInfo(weather);
         }else {
             //没读取到缓存，去服务器查询天气数据
-            String weatherId = getIntent().getStringExtra("weather_id");//获取intent并传入string（天气id）数据
+            String weatherId = getIntent().getStringExtra("weather_id");//获取用于启动WeatherActivity的intent并传入相应的key得到string（天气id）数据，因为传入的是字符串所以是getstringextra整型则是getIntExtra
             weatherLayout.setVisibility(View.INVISIBLE);//隐藏天气数据页面（因为此时是空的，不好看
             requestWeather(weatherId);//用天气id请求查询城市天气信息
         }
@@ -150,6 +150,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" +
                 weatherId + "&key=07fcdf72fb3d4816bf9690c8ea0bff1b";
+
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -162,7 +163,6 @@ public class WeatherActivity extends AppCompatActivity {
                     }
                 });
             }
-
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 final String responseText = response.body().string();
@@ -244,8 +244,8 @@ public class WeatherActivity extends AppCompatActivity {
 
         /**
          * 启动自动更新*/
-        Intent intent = new Intent(this, AutoUpdateService.class);
-        startService(intent);
+        Intent intent = new Intent(this, AutoUpdateService.class);//第一个作为上下文，第二个参数就是意图，要打开自动更新（目标活动）
+        startService(intent);//传入参数启动目标活动
 
     }
 
