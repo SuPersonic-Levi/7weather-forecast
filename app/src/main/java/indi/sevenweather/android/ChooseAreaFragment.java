@@ -159,7 +159,7 @@ public class ChooseAreaFragment extends Fragment {
 
         queryProvinces();//意味着先从省布局开始加载
     }
-
+ 
     private void initMediaPlayer(){
         try{
             mediaPlayer.setDataSource("http://m10.music.126.net/20220614161934/18da3f65aebccdd1932e4f816f513dea/ymusic/b255/21f2/d814/7cd8927b9ca639004ec27e723bd3961a.mp3");
