@@ -3,9 +3,9 @@ package indi.sevenweather.android;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +30,6 @@ import java.util.List;
 import indi.sevenweather.android.db.City;
 import indi.sevenweather.android.db.County;
 import indi.sevenweather.android.db.Province;
-import indi.sevenweather.android.gson.Weather;
 import indi.sevenweather.android.util.HttpUtil;
 import indi.sevenweather.android.util.Utility;
 import okhttp3.Call;
@@ -162,7 +159,8 @@ public class ChooseAreaFragment extends Fragment {
 
     private void initMediaPlayer(){
         try{
-            mediaPlayer.setDataSource("http://m10.music.126.net/20220614161934/18da3f65aebccdd1932e4f816f513dea/ymusic/b255/21f2/d814/7cd8927b9ca639004ec27e723bd3961a.mp3");
+            Uri setDataSourceuri = Uri.parse("android.resource://indi.sevenweather.android/"+R.raw.music);
+            mediaPlayer.setDataSource(getContext(), setDataSourceuri);
             mediaPlayer.prepare();
         }catch (Exception e){
             e.printStackTrace();
