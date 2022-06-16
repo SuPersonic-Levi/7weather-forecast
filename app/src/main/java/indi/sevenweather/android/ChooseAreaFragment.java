@@ -1,11 +1,14 @@
 package indi.sevenweather.android;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +53,9 @@ public class ChooseAreaFragment extends Fragment {
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
+
+    //振动、led亮灯
+    Vibrator mVibrator ;
 
     //省
     private List<Province> provinceList;
@@ -134,13 +140,18 @@ public class ChooseAreaFragment extends Fragment {
 
         initMediaPlayer();
 
-        //播放音乐
+
+        //播放音乐并振动
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!mediaPlayer.isPlaying()){
                     mediaPlayer.start();
                 }
+                //振动30s
+                mVibrator = (Vibrator)getContext().getSystemService(getContext().VIBRATOR_SERVICE);
+                mVibrator.vibrate(new long[]{500, 100, 500, 100, 900, 100}, 3);
+
             }
         });
         pause.setOnClickListener(new View.OnClickListener() {
